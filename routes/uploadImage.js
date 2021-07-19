@@ -1,7 +1,7 @@
 const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
-// const queryString = require("query-string");
+const { uid } = require("uid");
 
 const express = require("express");
 const router = express.Router();
@@ -13,8 +13,8 @@ const upload = multer({
   dest: "./temp",
 });
 
-const getSizeLinks = (sizes, imageExtension) => {
-  const query = `imageExtension=${imageExtension}`;
+const getSizeLinks = (sizes, imageExtension, uid) => {
+  const query = `imageExt=${imageExtension}&uid=${uid}`;
   return sizes.reduce(
     (acc, size) =>
       `${acc}<a href='/download/${size}?${query}'>pobierz</a> wersję ${size}px szerokości<br>`,
@@ -26,7 +26,9 @@ const resizedDirectory = path.join(__dirname, `../resized`);
 
 router.post("/upload", upload.single("image"), (req, res) => {
   if (!req.file)
-    return res.status(403).send("Musisz wybrać zdjęcia aby przejść dalej!");
+    return res
+      .status(403)
+      .send("Select an image that you want to resize first");
 
   const imageExtension = path.extname(req.file.originalname).toLowerCase();
   const tempPath = req.file.path;
@@ -39,14 +41,20 @@ router.post("/upload", upload.single("image"), (req, res) => {
       return res.sendStatus(500);
     }
 
+    const uuid = uid();
+
     resizeImage({
       inputPath: targetPath,
       outputDirectory: resizedDirectory,
       imageExtension,
       sizes: IMAGE_RESIZE_SIZES,
+      uid: uuid,
     })
       .then(() => {
-        res.status(200).send(getSizeLinks(IMAGE_RESIZE_SIZES, imageExtension));
+        console.log(getSizeLinks(IMAGE_RESIZE_SIZES, imageExtension, uuid));
+        res
+          .status(200)
+          .send(getSizeLinks(IMAGE_RESIZE_SIZES, imageExtension, uuid));
       })
       .catch((err) => {
         console.error(err);
@@ -56,12 +64,15 @@ router.post("/upload", upload.single("image"), (req, res) => {
 });
 
 router.get("/download/:size", (req, res) => {
-  const size = req.params.size;
-  const imageExtension = req.query.imageExtension;
+  const { query, params } = req;
+  const size = params.size;
+  const imageExtension = query.imageExt;
+  const uid = query.uid;
   const downloadPath = getResizedImagePath({
     imageExtension,
     size,
     outputDirectory: resizedDirectory,
+    uid,
   });
   res.download(downloadPath);
 });
