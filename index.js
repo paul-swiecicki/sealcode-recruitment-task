@@ -3,7 +3,12 @@ const path = require("path");
 const express = require("express");
 const app = express();
 
+const session = require("express-session");
+const FileStore = require("session-file-store")(session);
+
 const uploadImage = require("./routes/uploadImage");
+
+const fileStoreOptions = {};
 
 app.use("/", uploadImage);
 

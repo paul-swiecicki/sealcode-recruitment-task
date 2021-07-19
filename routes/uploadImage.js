@@ -1,7 +1,7 @@
 const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
-const queryString = require("query-string");
+// const queryString = require("query-string");
 
 const express = require("express");
 const router = express.Router();
@@ -13,10 +13,11 @@ const upload = multer({
   dest: "./temp",
 });
 
-const getSizeLinks = (sizes) => {
+const getSizeLinks = (sizes, imageExtension) => {
+  const query = `imageExtension=${imageExtension}`;
   return sizes.reduce(
     (acc, size) =>
-      `${acc}<a href='/download/${size}'>pobierz</a> wersję ${size}px szerokości<br>`,
+      `${acc}<a href='/download/${size}?${query}'>pobierz</a> wersję ${size}px szerokości<br>`,
     "" // use empty string as inital value
   );
 };
@@ -45,7 +46,7 @@ router.post("/upload", upload.single("image"), (req, res) => {
       sizes: IMAGE_RESIZE_SIZES,
     })
       .then(() => {
-        res.status(200).send(getSizeLinks(IMAGE_RESIZE_SIZES));
+        res.status(200).send(getSizeLinks(IMAGE_RESIZE_SIZES, imageExtension));
       })
       .catch((err) => {
         console.error(err);
@@ -56,6 +57,7 @@ router.post("/upload", upload.single("image"), (req, res) => {
 
 router.get("/download/:size", (req, res) => {
   const size = req.params.size;
+  const imageExtension = req.query.imageExtension;
   const downloadPath = getResizedImagePath({
     imageExtension,
     size,
