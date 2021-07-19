@@ -51,7 +51,6 @@ router.post("/upload", upload.single("image"), (req, res) => {
       uid: uuid,
     })
       .then(() => {
-        console.log(getSizeLinks(IMAGE_RESIZE_SIZES, imageExtension, uuid));
         res
           .status(200)
           .send(getSizeLinks(IMAGE_RESIZE_SIZES, imageExtension, uuid));

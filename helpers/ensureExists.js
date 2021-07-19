@@ -2,8 +2,8 @@ const fs = require("fs");
 
 /**
  * Ensures directory exists
- * @param {string} path
- * @param {number} mask
+ * @param {String} path
+ * @param {Number} mask
  * @param {Function} cb
  */
 function ensureExists(path, mask, cb) {
