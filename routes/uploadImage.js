@@ -64,15 +64,16 @@ router.post("/upload", upload.single("image"), (req, res) => {
 
 router.get("/download/:size", (req, res) => {
   const { query, params } = req;
+  const { imageExt: imageExtension, uid } = query;
   const size = params.size;
-  const imageExtension = query.imageExt;
-  const uid = query.uid;
+
   const downloadPath = getResizedImagePath({
     imageExtension,
     size,
     outputDirectory: resizedDirectory,
     uid,
   });
+
   res.download(downloadPath, (err) => {
     console.error(err);
   });
