@@ -73,7 +73,9 @@ router.get("/download/:size", (req, res) => {
     outputDirectory: resizedDirectory,
     uid,
   });
-  res.download(downloadPath);
+  res.download(downloadPath, (err) => {
+    console.error(err);
+  });
 });
 
 module.exports = router;
