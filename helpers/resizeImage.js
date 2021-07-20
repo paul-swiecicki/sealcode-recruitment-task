@@ -46,12 +46,6 @@ const resizeImage = ({
   uid,
 }) =>
   new Promise((resolve, reject) => {
-    if (!sizes.length) reject("Pass at least one size in the sizes array");
-    if (!inputPath) reject("input path property not provided");
-    if (!outputDirectory) reject("output directory property not provided");
-    if (!imageExtension) reject("image extension property not provided");
-    if (!uid) reject("uid property not provided");
-
     const image = sharp(inputPath);
 
     const UIDDirectory = path.join(outputDirectory, uid);
