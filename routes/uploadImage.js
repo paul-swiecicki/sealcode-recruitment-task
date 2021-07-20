@@ -7,7 +7,11 @@ const express = require("express");
 const router = express.Router();
 
 const { resizeImage, getResizedImagePath } = require("../helpers/resizeImage");
-const { IMAGE_RESIZE_SIZES } = require("../constants/constants");
+const { isFormatCompatible } = require("../helpers/isFormatCompatible");
+const {
+  IMAGE_RESIZE_SIZES,
+  COMPATIBLE_FORMATS,
+} = require("../constants/constants");
 
 const upload = multer({
   dest: "./temp",
@@ -31,6 +35,14 @@ router.post("/upload", upload.single("image"), (req, res) => {
       .send("Select an image that you want to resize first");
 
   const imageExtension = path.extname(req.file.originalname).toLowerCase();
+  if (!isFormatCompatible(imageExtension))
+    return res
+      .status(403)
+      .send(
+        `Image format not supported. Only ${COMPATIBLE_FORMATS.map(
+          (format) => `${format} `
+        )} are supported`
+      );
   const tempPath = req.file.path;
 
   const targetPath = path.join(__dirname, `../uploads/image${imageExtension}`);
