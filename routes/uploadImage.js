@@ -75,7 +75,7 @@ router.get("/download/:size", (req, res) => {
   });
 
   res.download(downloadPath, (err) => {
-    console.error(err);
+    if (err) console.error(err);
   });
 });
 
