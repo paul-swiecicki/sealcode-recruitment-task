@@ -7,14 +7,39 @@
     <title>Generator miniaturek</title>
     <link rel="stylesheet" href="/index.css" type="text/css" />
   </head>
+  <script>
+    // Skrypt użyty jedynie w celu pokazania czy zdjęcie zostało już załadowane
+    window.onload = () => {
+      const fileInput = document.querySelector(".image-input");
+      const fileInputField = document.querySelector(".image-input__field");
+
+      fileInput.addEventListener("change", (e) => {
+        const files = fileInput.files;
+
+        if (files && files[0]) {
+          fileInputField.textContent = files[0].name;
+        }
+      });
+    };
+  </script>
   <body>
     <header><h1>Generator miniaturek</h1></header>
     <main>
       <form method="post" enctype="multipart/form-data" action="/upload">
-        <input type="file" name="image" id="image" required />
-        <button type="submit">submit</button>
+        <div class="image-input-container">
+          <input
+            class="image-input"
+            type="file"
+            name="image"
+            id="image"
+            required
+          />
+          <label for="image" class="image-input__field"
+            >Wybierz zdjęcie...</label
+          >
+        </div>
+        <button class="submit-btn" type="submit">Generuj miniaturki</button>
       </form>
-      <section class="image-processing-output"></section>
     </main>
     <footer>Zadanie wykonał Paweł Święcicki dla SEALCODE</footer>
   </body>
