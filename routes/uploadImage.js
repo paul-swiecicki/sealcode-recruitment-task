@@ -35,43 +35,50 @@ router.post("/upload", upload.single("image"), (req, res) => {
       .send("Select an image that you want to resize first");
 
   const imageExtension = path.extname(req.file.originalname).toLowerCase();
-  if (!isFormatCompatible(imageExtension))
-    return res
-      .status(403)
-      .send(
-        `Image format not supported. Only ${COMPATIBLE_FORMATS.map(
-          (format) => `${format} `
-        )} are supported`
-      );
   const tempPath = req.file.path;
 
   const targetPath = path.join(__dirname, `../uploads/image${imageExtension}`);
+  console.log({ tempPath, targetPath });
 
-  fs.rename(tempPath, targetPath, (err) => {
-    if (err) {
-      console.error(err);
-      return res.sendStatus(500);
-    }
-
-    const uuid = uid();
-
-    resizeImage({
-      inputPath: targetPath,
-      outputDirectory: resizedDirectory,
-      imageExtension,
-      sizes: IMAGE_RESIZE_SIZES,
-      uid: uuid,
-    })
-      .then(() => {
-        res
-          .status(200)
-          .send(getSizeLinks(IMAGE_RESIZE_SIZES, imageExtension, uuid));
-      })
-      .catch((err) => {
+  if (isFormatCompatible(imageExtension)) {
+    fs.rename(tempPath, targetPath, (err) => {
+      if (err) {
         console.error(err);
-        res.status(403).send(err.message);
-      });
-  });
+        return res.sendStatus(500);
+      }
+
+      const uuid = uid();
+
+      resizeImage({
+        inputPath: targetPath,
+        outputDirectory: resizedDirectory,
+        imageExtension,
+        sizes: IMAGE_RESIZE_SIZES,
+        uid: uuid,
+      })
+        .then(() => {
+          res
+            .status(200)
+            .send(getSizeLinks(IMAGE_RESIZE_SIZES, imageExtension, uuid));
+        })
+        .catch((err) => {
+          console.error(err);
+          res.status(403).send(err.message);
+        });
+    });
+  } else {
+    fs.unlink(tempPath, (err) => {
+      if (err) return res.sendStatus(500);
+
+      return res
+        .status(403)
+        .send(
+          `Image format not supported. Only ${COMPATIBLE_FORMATS.map(
+            (format) => `${format} `
+          )} are supported`
+        );
+    });
+  }
 });
 
 router.get("/download/:size", (req, res) => {
