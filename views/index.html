@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generator miniaturek</title>
-    <link rel="stylesheet" href="/index.css" type="text/css" />
+    <!-- <link rel="stylesheet" href="/index.css" type="text/css" /> -->
   </head>
   <script>
     // Skrypt użyty jedynie w celu pokazania czy zdjęcie zostało już załadowane
@@ -13,13 +13,17 @@
       const fileInput = document.querySelector(".image-input");
       const fileInputField = document.querySelector(".image-input__field");
 
-      fileInput.addEventListener("change", (e) => {
+      const injectFileName = () => {
         const files = fileInput.files;
 
         if (files && files[0]) {
           fileInputField.textContent = files[0].name;
         }
-      });
+      };
+
+      injectFileName();
+
+      fileInput.addEventListener("change", injectFileName);
     };
   </script>
   <body>
