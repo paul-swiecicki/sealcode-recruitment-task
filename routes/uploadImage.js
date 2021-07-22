@@ -38,7 +38,6 @@ router.post("/upload", upload.single("image"), (req, res) => {
   const tempPath = req.file.path;
 
   const targetPath = path.join(__dirname, `../uploads/image${imageExtension}`);
-  console.log({ tempPath, targetPath });
 
   if (isFormatCompatible(imageExtension)) {
     fs.rename(tempPath, targetPath, (err) => {

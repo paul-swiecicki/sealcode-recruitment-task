@@ -1,6 +1,10 @@
 const sharp = require("sharp");
 const path = require("path");
+const fs = require("fs");
 const { ensureExists } = require("./ensureExists");
+
+// make sure that sharp doesn't use images stored in cache sent earlier by other users
+sharp.cache({ files: 0 });
 
 /**
  *
