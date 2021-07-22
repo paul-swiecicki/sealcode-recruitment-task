@@ -8,3 +8,11 @@ Project is created with:
 - sharp
 - query string
 - uid
+
+## Installation
+To run the project:
+```
+$ cd sealcode-recruitment-task
+$ npm install
+$ node index
+```
