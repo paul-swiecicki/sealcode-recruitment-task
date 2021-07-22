@@ -1,21 +1,13 @@
 const fs = require("fs");
-const multer = require("multer");
 const path = require("path");
 const { uid } = require("uid");
 
-const express = require("express");
-const router = express.Router();
-
-const { resizeImage, getResizedImagePath } = require("../helpers/resizeImage");
+const { resizeImage } = require("../helpers/resizeImage");
 const { isFormatCompatible } = require("../helpers/isFormatCompatible");
 const {
   IMAGE_RESIZE_SIZES,
   COMPATIBLE_FORMATS,
 } = require("../constants/constants");
-
-const upload = multer({
-  dest: "./temp",
-});
 
 const getSizeLinks = (sizes, imageExtension, uid) => {
   const query = `imageExt=${imageExtension}&uid=${uid}`;
@@ -28,7 +20,7 @@ const getSizeLinks = (sizes, imageExtension, uid) => {
 
 const resizedDirectory = path.join(__dirname, `../resized`);
 
-router.post("/upload", upload.single("image"), (req, res) => {
+const uploadImage = (req, res) => {
   if (!req.file)
     return res
       .status(403)
@@ -78,34 +70,6 @@ router.post("/upload", upload.single("image"), (req, res) => {
         );
     });
   }
-});
+};
 
-router.get("/download/:size", (req, res) => {
-  const { query, params } = req;
-  const { imageExt: imageExtension, uid } = query;
-  const size = params.size;
-
-  const downloadPath = getResizedImagePath({
-    imageExtension,
-    size,
-    outputDirectory: resizedDirectory,
-    uid,
-  });
-
-  res.download(downloadPath, (err) => {
-    if (err) {
-      console.error(err);
-      if (err.code === "ENOENT")
-        return res
-          .status(403)
-          .send(
-            "Images were removed because time for downloading passed. Please try again."
-          );
-      return res
-        .status(500)
-        .send("Error occured while trying to download file");
-    }
-  });
-});
-
-module.exports = router;
+module.exports = { uploadImage };
