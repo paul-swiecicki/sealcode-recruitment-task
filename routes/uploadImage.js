@@ -93,7 +93,18 @@ router.get("/download/:size", (req, res) => {
   });
 
   res.download(downloadPath, (err) => {
-    if (err) console.error(err);
+    if (err) {
+      console.error(err);
+      if (err.code === "ENOENT")
+        return res
+          .status(403)
+          .send(
+            "Images were removed because time for downloading passed. Please try again."
+          );
+      return res
+        .status(500)
+        .send("Error occured while trying to download file");
+    }
   });
 });
 
