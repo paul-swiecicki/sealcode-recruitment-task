@@ -12,6 +12,7 @@ Project is created with:
 ## Installation
 To run the project:
 ```
+$ cd sealcode-recruitment-task
 $ npm install
 $ node index
 ```
