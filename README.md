@@ -8,3 +8,10 @@ Project is created with:
 - sharp
 - query string
 - uid
+
+## Installation
+To run the project:
+```
+$ npm install
+$ node index
+```
